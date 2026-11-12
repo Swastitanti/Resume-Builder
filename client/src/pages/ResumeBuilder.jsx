@@ -23,8 +23,9 @@ import ColorPicker from "../components/ColorPicker";
 import ProfessionalSummary from "../components/ProfessionalSummary";
 import ExperienceForm from "../components/ExperienceForm";
 import EducationForm from "../components/EducationForm";
-import SkillsForm from "../components/SkillsForm";
 import ProjectForm from "../components/ProjectForm";
+import SkillsForm from "../components/SkillsForm";
+
 import { useSelector } from "react-redux";
 import api from "../config/api";
 import toast from "react-hot-toast";
@@ -167,11 +168,11 @@ const ResumeBuilder = () => {
               />
 
               {/* TOP BAR */}
-              <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1">
+              <div className="flex justify-between items-center mb-6 border-b py-1">
                 <div className="flex items-center gap-2">
                   {/* TEMPLATE SELECTOR */}
                   <TemplateSelector
-                    selectedTemplate={resumeData.template}
+                    selectedTemplate={resumeData?.template}
                     onChange={(template) =>
                       setResumeData((prev) => ({ ...prev, template }))
                     }
@@ -179,7 +180,7 @@ const ResumeBuilder = () => {
 
                   {/* COLOR PICKER */}
                   <ColorPicker
-                    selectedColor={resumeData.accent_color}
+                    selectedColor={resumeData?.accent_color}
                     onChange={(color) =>
                       setResumeData((prev) => ({
                         ...prev,
@@ -192,7 +193,7 @@ const ResumeBuilder = () => {
                 <div className="flex items-center">
                   {activeSectionIndex > 0 && (
                     <button
-                      className="flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
+                      className="flex items-center gap-1 p-3 rounded-lg text-gray-600 hover:bg-gray-50"
                       onClick={() =>
                         setActiveSectionIndex((prev) => Math.max(0, prev - 1))
                       }
@@ -202,7 +203,7 @@ const ResumeBuilder = () => {
                   )}
 
                   <button
-                    className="flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
+                    className="flex items-center gap-1 p-3 rounded-lg text-gray-600 hover:bg-gray-50"
                     onClick={() =>
                       setActiveSectionIndex((prev) =>
                         Math.min(prev + 1, sections.length - 1)
@@ -232,19 +233,19 @@ const ResumeBuilder = () => {
 
                 {activeSection.id === "summary" && (
                   <ProfessionalSummary
-                    data={resumeData.professional_summary}
+                    data={resumeData?.professional_summary}
                     onChange={(data) =>
                       setResumeData((prev) => ({
                         ...prev,
                         professional_summary: data,
                       }))
-                    } setResumeData = {setResumeData}
+                    }
                   />
                 )}
 
                 {activeSection.id === "experience" && (
                   <ExperienceForm
-                    data={resumeData.experience || []}
+                    data={resumeData?.experience || []}
                     onChange={(data) =>
                       setResumeData((prev) => ({ ...prev, experience: data }))
                     }
@@ -253,7 +254,7 @@ const ResumeBuilder = () => {
 
                 {activeSection.id === "education" && (
                   <EducationForm
-                    data={resumeData.education || []}
+                    data={resumeData?.education || []}
                     onChange={(data) =>
                       setResumeData((prev) => ({ ...prev, education: data }))
                     }
@@ -262,7 +263,7 @@ const ResumeBuilder = () => {
 
                 {activeSection.id === "project" && (
                   <ProjectForm
-                    data={resumeData.project || []}
+                    data={resumeData?.project || []}
                     onChange={(data) =>
                       setResumeData((prev) => ({ ...prev, project: data }))
                     }
@@ -271,7 +272,7 @@ const ResumeBuilder = () => {
 
                 {activeSection.id === "skills" && (
                   <SkillsForm
-                    data={resumeData.skills || []}
+                    data={resumeData?.skills || []}
                     onChange={(data) =>
                       setResumeData((prev) => ({ ...prev, skills: data }))
                     }
@@ -281,7 +282,7 @@ const ResumeBuilder = () => {
 
               {/* SAVE BUTTON */}
               <button
-                className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 px-6 py-2 mt-6 rounded-md shadow text-sm transition-all"
+                className="px-5 py-2 mt-3 bg-green-500 text-white text-sm rounded-lg shadow hover:bg-green-700 transition"
                 onClick={() =>
                   toast.promise(saveResume(), { loading: "Saving..." })
                 }
@@ -294,11 +295,11 @@ const ResumeBuilder = () => {
           {/* RIGHT PANEL */}
           <div className="lg:col-span-7 mt-6 lg:mt-0">
             <div className="relative w-full">
-              <div className="absolute bottom-3 right-0 left-0 flex items-center justify-end gap-2">
-                {resumeData.public && (
+              <div className="absolute bottom-3 right-0 flex gap-3">
+                {resumeData?.public && (
                   <button
                     onClick={handleShare}
-                    className="flex items-center gap-2 px-4 p-2 text-xs bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:ring"
                   >
                     <Share2Icon className="size-4" /> Share
                   </button>
@@ -306,14 +307,14 @@ const ResumeBuilder = () => {
 
                 <button
                   onClick={ChangeResumeVisibility}
-                  className="flex items-center gap-2 px-4 p-2 text-xs bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 rounded-lg ring-purple-300 hover:ring transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:ring"
                 >
-                  {resumeData.public ? (
+                  {resumeData?.public ? (
                     <EyeIcon className="size-4" />
                   ) : (
                     <EyeOffIcon className="size-4" />
                   )}
-                  {resumeData.public ? "Public" : "Private"}
+                  {resumeData?.public ? "Public" : "Private"}
                 </button>
 
                 <button
@@ -327,8 +328,8 @@ const ResumeBuilder = () => {
 
             <ResumePreview
               data={resumeData}
-              template={resumeData.template}
-              accentColor={resumeData.accent_color}
+              template={resumeData?.template}
+              accentColor={resumeData?.accent_color}
             />
           </div>
         </div>

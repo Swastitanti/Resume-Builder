@@ -19,8 +19,9 @@ const ProfessionalSummary = ({ data, onChange, setResumeData }) => {
         { userContent: prompt },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      setResumeData(prev => ({...prev, professional_summary: response.data.enhancedContent}))
 
-      onChange(response.data.enhancedContent); // 🔥 FIXED
+      // onChange(response.data.enhancedContent);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     } finally {

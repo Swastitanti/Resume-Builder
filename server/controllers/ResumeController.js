@@ -128,22 +128,22 @@ export const updateResume = async (req, res) => {
         },
       });
 
-    //   if (!resumeDataCopy.personal_info) {
-    //     resumeDataCopy.personal_info = {};
-    //   }
+      if (!resumeDataCopy.personal_info) {
+        resumeDataCopy.personal_info = {};
+      }
       resumeDataCopy.personal_info.image = response.url;
     }
 
     // ------- FIX: update the resume correctly -------
-    // const updated = await Resume.findOneAndUpdate(
-    //   { userId, _id: resumeId },
-    //   resumeDataCopy,
-    //   { new: true }
-    // );
+    const updated = await Resume.findOneAndUpdate(
+      { userId, _id: resumeId },
+      resumeDataCopy,
+      { new: true }
+    );
 
-    // if (!updated) {
-    //   return res.status(404).json({ message: "Resume not found" });
-    // }
+    if (!updated) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
 
     return res.status(200).json({
       message: "saved successfully",
