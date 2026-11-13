@@ -107,29 +107,61 @@ const ResumeBuilder = () => {
 
   // ---------- SAVE RESUME ----------
 
-  const saveResume = async () => {
-    try {
-      let updatedResumeData = structuredClone(resumeData);
-      if (typeof resumeData.personal_info.image === "object") {
-        delete updatedResumeData.personal_info.image;
-      }
-      const formData = new FormData();
-      formData.append("resumeId", resumeId);
-      formData.append("resumeData", JSON.stringify(updatedResumeData));
-      removeBackground && formData.append("removeBackground", "yes");
-      typeof resumeData.personal_info.image === "object" &&
-        formData.append("image", resumeData.personal_info.image);
-      const { data } = await api.put("/api/resumes/update", formData, {
+  
+const saveResume = async () => {
+  try {
+    let updatedResumeData = structuredClone(resumeData);
+
+    if (
+      updatedResumeData.personal_info?.image &&
+      typeof updatedResumeData.personal_info.image === "object"
+    ) {
+      delete updatedResumeData.personal_info.image;
+    }
+
+    const formData = new FormData();
+
+    formData.append("resumeId", resumeId);
+    formData.append("resumeData", JSON.stringify(updatedResumeData));
+
+    if (removeBackground) {
+      formData.append("removeBackground", "yes");
+    }
+
+    if (
+      resumeData.personal_info?.image &&
+      typeof resumeData.personal_info.image === "object"
+    ) {
+      formData.append("image", resumeData.personal_info.image);
+    }
+
+    const { data } = await api.put(
+      "/api/resumes/update",
+      formData,
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-      setResumeData(data.resume);
-      toast.success(data.message);
-    } catch (error) {
-      console.log("error saving resume");
+      }
+    );
+
+    if (!data.resume) {
+      throw new Error("Updated resume was not returned by the server");
     }
-  };
+
+    setResumeData(data.resume);
+
+    return data;
+  } catch (error) {
+    console.error(
+      "Error saving resume:",
+      error.response?.data || error.message
+    );
+
+    throw error;
+  }
+};
+
 
   // ---------- SHARE ----------
   const handleShare = () => {
@@ -284,7 +316,11 @@ const ResumeBuilder = () => {
               <button
                 className="px-5 py-2 mt-3 bg-green-500 text-white text-sm rounded-lg shadow hover:bg-green-700 transition"
                 onClick={() =>
-                  toast.promise(saveResume(), { loading: "Saving..." })
+                  toast.promise(saveResume(), {
+                    loading: "Saving resume...",
+                    success: "Resume saved successfully!",
+                    error: "Failed to save resume. Please try again.",
+                  })
                 }
               >
                 Save Changes

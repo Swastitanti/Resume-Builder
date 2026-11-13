@@ -101,19 +101,25 @@ export const updateResume = async (req, res) => {
   try {
     const userId = req.userId;
 
-    // ------- FIX: resumeId + resumeData always come as strings -------
-    // const resumeId = req.body.resumeId;
-    // const removeBackground = req.body.removeBackground;
-    // const resumeData = JSON.parse(req.body.resumeData);
-
-    const {resumeId, resumeData, removeBackground} = res.body // my added
+    // Get data from frontend
+    const { resumeId, resumeData, removeBackground } = req.body;
 
     const image = req.file;
-    // let resumeDataCopy = { ...resumeData };
-    let resumeDataCopy = JSON.parse(resumeData);
-    const resume = await Resume.findByIdAndUpdate({userId, _id: resumeId}, resumeDataCopy, {new: true})
 
-    // ------- FIX: handle image upload properly -------
+    // Validate required fields
+    if (!resumeId || !resumeData) {
+      return res.status(400).json({
+        message: "Resume ID or resume data is missing",
+      });
+    }
+
+    // Convert resumeData string into an object
+    const resumeDataCopy =
+      typeof resumeData === "string"
+        ? JSON.parse(resumeData)
+        : resumeData;
+
+    // Upload image if provided
     if (image) {
       const imageBufferData = fs.createReadStream(image.path);
 
@@ -124,34 +130,40 @@ export const updateResume = async (req, res) => {
         transformation: {
           pre:
             "w-300,h-300,fo-face,z-0.75" +
-            (removeBackground ? ",e-bgremove" : ""),
+            (removeBackground === "yes" ? ",e-bgremove" : ""),
         },
       });
 
       if (!resumeDataCopy.personal_info) {
         resumeDataCopy.personal_info = {};
       }
+
       resumeDataCopy.personal_info.image = response.url;
     }
 
-    // ------- FIX: update the resume correctly -------
+    // Update resume in database
     const updated = await Resume.findOneAndUpdate(
       { userId, _id: resumeId },
       resumeDataCopy,
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!updated) {
-      return res.status(404).json({ message: "Resume not found" });
+      return res.status(404).json({
+        message: "Resume not found",
+      });
     }
 
     return res.status(200).json({
-      message: "saved successfully",
-      resume //my added
-    //   resume: updated, // return updated resume (your frontend expects this)
+      message: "Resume saved successfully",
+      resume: updated,
     });
-    
+
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error("Error updating resume:", error);
+
+    return res.status(400).json({
+      message: error.message,
+    });
   }
 };

@@ -1,4 +1,5 @@
-import { BoxesLinkedIcon, BriefcaseBusiness, Globe, Mail, MapPin, Phone, User } from 'lucide-react'
+import {BriefcaseBusiness, Globe, Mail, MapPin, Phone, User } from 'lucide-react'
+import { FaLinkedin } from "react-icons/fa";
 import React from 'react'
 
 const PersonalInfoForm = ({data, onChange, removeBackground, setRemoveBackground}) => {
@@ -13,7 +14,7 @@ const PersonalInfoForm = ({data, onChange, removeBackground, setRemoveBackground
         {key: "phone", label: "Phone Number", icon: Phone, type: "tel"},
         {key: "location", label: "Location", icon: MapPin, type: "text"},
         {key: "profession", label: "Profession", icon: BriefcaseBusiness, type: "text"},
-        {key: "linkedin", label: "LinkedIn Profile", icon: BoxesLinkedIcon, type: "url"},
+        {key: "linkedin", label: "LinkedIn Profile", icon: FaLinkedin, type: "url"},
         {key: "website", label: "Personal Website", icon: Globe, type: "url"},
     ]
 
